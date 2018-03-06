@@ -1,11 +1,12 @@
 // LaunchBar Action Script
 
-function runWithString(string) {
-    if (string) {
-        return {
-            title: "Press ENTER to start search"
-        };
-    } else {
-        return [];
+function runWithString(string)
+{
+    if (string == "") {
+        let clip = Launchbar.getClipboardString();
+        return [{
+            title: clip,
+            subtitle: "clipboard",
+        }];
     }
 }

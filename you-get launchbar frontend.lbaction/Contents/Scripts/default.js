@@ -1,15 +1,17 @@
 // LaunchBar Action Script
 
-function run(argument) {
-}
-
 function runWithString(argument) {
+    let checker = argument.match(/http(s):\/\/.+/);
+    if (checker == null) {
+        LaunchBar.alert("Incorrect url");
+        return;
+    }
     let ret_json = LaunchBar.execute('/usr/local/bin/you-get', argument, '--json');
     //Try to covert return string to json format
     try {
         var data = JSON.parse(ret_json);
     } catch (error) {
-        LaunchBar.alert("Error: 'you-get' desn't support this website.");
+        LaunchBar.alert("Error: 'you-get' doesn't support this link.");
         return;
     }
     //Push json info to launchbar
@@ -27,7 +29,6 @@ function runWithString(argument) {
         //Push every url in json to single block
         for (let index = 0; index < data.streams[_url].src.length; index++) {
             video_url.push({
-                title: data.streams[_url].src[index],
                 url: data.streams[_url].src[index],
                 badge: (index + 1).toString()
             })
