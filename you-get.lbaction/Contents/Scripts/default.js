@@ -3,16 +3,31 @@
 function runWithString(argument) {
     let checker = argument.match(/http(s):\/\/.+/);
     if (checker == null) {
-        LaunchBar.alert("Incorrect url");
-        return;
+        return [{
+            title: argument,
+            subtitle: 'input'
+        }, {
+            title: 'ERROR: incorrect url'
+        }]
     }
-    let ret_json = LaunchBar.execute('/usr/local/bin/you-get', argument, '--json');
+    try {
+        let ret_json = LaunchBar.execute('/usr/local/bin/you-get', argument, '--json');
+    } catch (error) {
+        return [{
+            title: "Install 'you-get'",
+            url: "https://github.com/soimort/you-get"
+        }]
+    }
     //Try to covert return string to json format
     try {
         var data = JSON.parse(ret_json);
     } catch (error) {
-        LaunchBar.alert("Error: 'you-get' doesn't support this link.");
-        return;
+        return [{
+            title: argument,
+            subtitle: "input"
+        }, {
+            title: "ERROR: 'you-get' doesn't support this link."
+        }]
     }
     //Push json info to launchbar
     let result = [];
