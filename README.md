@@ -1,2 +1,2 @@
 # launchbar-self-actions
-Launchbar action for myself to use
+This is the Launchbar actions collection for myself to use.
