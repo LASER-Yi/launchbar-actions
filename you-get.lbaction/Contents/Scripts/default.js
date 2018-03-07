@@ -1,8 +1,8 @@
 // LaunchBar Action Script
 
 function runWithString(argument) {
-    let checker = argument.match(/http(s):\/\/.+/);
-    if (checker == null) {
+    var url_checker = /((http|ftp|https):\/\/)?[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+    if (!url_checker.test(argument)) {
         return [{
             title: argument,
             subtitle: 'input'
