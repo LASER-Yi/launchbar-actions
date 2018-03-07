@@ -11,7 +11,9 @@ function runWithString(argument) {
         }]
     }
     try {
-        let ret_json = LaunchBar.execute('/usr/local/bin/you-get', argument, '--json');
+        var ret_json = LaunchBar.execute('/usr/local/bin/you-get', argument, '--json');
+        let reg = new RegExp('^[^\{]*');
+        ret_json = ret_json.replace(reg,'');
     } catch (error) {
         return [{
             title: "Install 'you-get'",
