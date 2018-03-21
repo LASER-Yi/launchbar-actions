@@ -9,13 +9,11 @@
 	<key>CFBundleName</key>
 	<string>You-get</string>
 	<key>CFBundleVersion</key>
-	<string>0.0.1</string>
+	<string>0.0.2</string>
 	<key>LBArgument</key>
 	<string>Any URL You-get supported</string>
 	<key>LBAssociatedApplication</key>
 	<string>/usr/local/bin/you-get</string>
-	<key>LBDebugLogEnabled</key>
-	<true/>
 	<key>LBDescription</key>
 	<dict>
 		<key>LBArgument</key>
@@ -26,10 +24,10 @@
 		<string>liangyi0007@gmail.com</string>
 		<key>LBRequirements</key>
 		<string>Requires an active internet connection.</string>
+		<key>LBResult</key>
+		<string>A command then you-get used</string>
 		<key>LBSummary</key>
-		<string>Allow user by using you-get to download video</string>
-		<key>LBTwitter</key>
-		<string>@Stephenly0007</string>
+		<string>A you-get frontend then allow user download video using you-get</string>
 		<key>LBWebsiteURL</key>
 		<string></string>
 	</dict>
@@ -37,6 +35,8 @@
 	<integer>6</integer>
 	<key>LBRequirements</key>
 	<string>Requires an active internet connection.</string>
+	<key>LBResult</key>
+	<string>A command then you-get used</string>
 	<key>LBScripts</key>
 	<dict>
 		<key>LBDefaultScript</key>
@@ -58,7 +58,7 @@
 		</dict>
 	</dict>
 	<key>LBTextInputTitle</key>
-	<string>Supported URL</string>
+	<string>Any URL</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2018 LASER_</string>
 </dict>

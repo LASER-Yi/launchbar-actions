@@ -1,36 +1,48 @@
 // LaunchBar Action Script
 
-function runWithString(argument) {
-    var url_checker = /((http|ftp|https):\/\/)?[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
-    if (!url_checker.test(argument)) {
+function run() {
+    LaunchBar.openURL('https://github.com/soimort/you-get');
+}
+
+function runWithString(string) {
+    var url_checker = /^(?:([a-zA-z]+):)(?:\/{0,3})/;
+    if (!url_checker.test(string)) {
         return [{
-            title: argument,
-            subtitle: 'input'
-        }, {
-            title: 'ERROR: incorrect url'
+            title: 'Incorrect URL',
+            url: string
         }]
     }
+    var use_proxy = false;
+    if (LaunchBar.options.shiftKey) {
+        use_proxy = true;
+    }
+    return json_dump(list_downloadable_url(string, use_proxy), use_proxy);
+}
+
+function list_downloadable_url(ori_link, is_proxy) {
     try {
-        var ret_json = LaunchBar.execute('/usr/local/bin/you-get', argument, '--json');
-        let reg = new RegExp('^[^\{]*');
-        ret_json = ret_json.replace(reg,'');
+        //get json download information(String)
+        var ret_json;
+        if (is_proxy) {
+            ret_json = LaunchBar.execute('/usr/local/bin/you-get', ori_link, '--json', '-x', '127.0.0.1:1085');
+        } else {
+            ret_json = LaunchBar.execute('/usr/local/bin/you-get', ori_link, '--json');
+        }
+        //delete front and end string
+        ret_json = ret_json.replace(/^([^\{]*)/, '').replace(/([^\}]*)$/, '');
     } catch (error) {
-        return [{
-            title: "Install 'you-get'",
-            url: "https://github.com/soimort/you-get"
-        }]
+        throw new Error("Please install 'you-get'")
     }
     //Try to covert return string to json format
     try {
         var data = JSON.parse(ret_json);
     } catch (error) {
-        return [{
-            title: argument,
-            subtitle: "input"
-        }, {
-            title: "ERROR: 'you-get' doesn't support this link."
-        }]
+        throw new Error("'you-get' doesn't support this link.");
     }
+    return data;
+}
+
+function json_dump(data, is_proxy) {
     //Push json info to launchbar
     let result = [];
     //Push website title
@@ -38,16 +50,25 @@ function runWithString(argument) {
         icon: "web_icon.png",
         title: data.title,
         subtitle: data.site,
-        url: data.url
+        url: data.url,
+        badge: is_proxy ? "Proxy" : "Direct"
     })
     //Push every result in json
     for (const _url in data.streams) {
         let video_url = [];
-        //Push every url in json to single block
-        for (let index = 0; index < data.streams[_url].src.length; index++) {
+        if (data.streams[_url].src) {
+            //Push every url in json to single block(src)
+            for (let index = 0; index < data.streams[_url].src.length; index++) {
+                video_url.push({
+                    url: data.streams[_url].src[index],
+                    badge: (index + 1).toString()
+                })
+            }
+        } else {
+            //Push Url
             video_url.push({
-                url: data.streams[_url].src[index],
-                badge: (index + 1).toString()
+                url: data.streams[_url].url,
+                badge: "1"
             })
         }
         //Push main block
@@ -55,24 +76,24 @@ function runWithString(argument) {
             children: video_url,
             icon: "video_icon.png",
             title: data.streams[_url].container.toUpperCase(),
-            subtitle: _url,
-            label: (data.streams[_url].size / 1048576.0).toFixed(2).toString() + "MB",
-            badge: data.streams[_url].src.length.toString(),
-            action: 'startDownload',
+            subtitle: data.streams[_url].quality ? data.streams[_url].quality : _url,
+            label: (data.streams[_url].size / 1048576.0).toFixed(2).toString() + " MB",
+            badge: data.streams[_url].src ? data.streams[_url].src.length.toString() : "1",
+            action: 'start_download',
             actionArgument: {
                 tag: _url,
-                src: argument
+                src: data.url,
+                proxy: is_proxy
             }
         })
     }
     return result;
 }
 
-function startDownload(info_json) {
+function start_download(info_json) {
     let ter_command = "you-get" + " " + "--itag=" + info_json.tag + " " + info_json.src + " -o ~/downloads";
+    if (info_json.proxy === true) {
+        ter_command += " -x 127.0.0.1:1085";
+    }
     LaunchBar.performAction("Run Terminal Command", ter_command);
-}
-
-function bg_startDownload(info_json) {
-    LaunchBar.execute('you-get', "--itag=" + info_json.tag, info_json.src, "-o ~/downloads");
 }
