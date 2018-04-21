@@ -29,7 +29,7 @@
 		<key>LBSummary</key>
 		<string>A you-get frontend then allow user download video using you-get</string>
 		<key>LBWebsiteURL</key>
-		<string></string>
+		<string>https://github.com/LASER-Yi/launchbar-self-actions</string>
 	</dict>
 	<key>LBMinimumLaunchBarVersion</key>
 	<integer>6</integer>

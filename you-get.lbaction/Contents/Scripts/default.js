@@ -1,5 +1,9 @@
 // LaunchBar Action Script
 
+/*Enter your you-get dir here */
+var yg_dir = '/usr/local/anaconda3/bin/you-get';
+var http_proxy_addr = '127.0.0.1:1085';
+
 function run() {
     LaunchBar.openURL('https://github.com/soimort/you-get');
 }
@@ -24,14 +28,14 @@ function list_downloadable_url(ori_link, is_proxy) {
         //get json download information(String)
         var ret_json;
         if (is_proxy) {
-            ret_json = LaunchBar.execute('/usr/local/bin/you-get', ori_link, '--json', '-x', '127.0.0.1:1085');
+            ret_json = LaunchBar.execute(yg_dir, ori_link, '--json', '-x', http_proxy_addr);
         } else {
-            ret_json = LaunchBar.execute('/usr/local/bin/you-get', ori_link, '--json');
+            ret_json = LaunchBar.execute(yg_dir, ori_link, '--json');
         }
         //delete front and end string
         ret_json = ret_json.replace(/^([^\{]*)/, '').replace(/([^\}]*)$/, '');
     } catch (error) {
-        throw new Error("Please install 'you-get'")
+        throw new Error("Please setup this action")
     }
     //Try to covert return string to json format
     try {
@@ -93,7 +97,7 @@ function json_dump(data, is_proxy) {
 function start_download(info_json) {
     let ter_command = "you-get" + " " + "--itag=" + info_json.tag + " " + info_json.src + " -o ~/downloads";
     if (info_json.proxy === true) {
-        ter_command += " -x 127.0.0.1:1085";
+        ter_command += " " + http_proxy_addr;
     }
     LaunchBar.performAction("Run Terminal Command", ter_command);
 }
